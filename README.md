@@ -1,3 +1,5 @@
+Para asignarle mesa: en URLS se le aumenta al link: ?mesa=(numero de mesa) ejemplo:
+https://linkfortis.com/encuesta/linkfortis.html?mesa=4
 # encuesta
 sistema de ReviewShield
 *********CLIENTE NUEVO*****
