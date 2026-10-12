@@ -6,7 +6,7 @@
     <title>Envíanos tus comentarios - Linkfortis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilos interactivos para la escala de Emojis (1 a 5) */
+        /* Estilos interactivos para la escala de Emojis (1 al 5) */
         .emoji-group {
             display: flex;
             justify-content: space-between;
@@ -59,7 +59,7 @@
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2 text-center tracking-tight">Lamentamos que tu visita no haya cumplido con tus expectativas</h2>
         <p class="text-gray-500 mb-8 text-sm text-center leading-relaxed">Por favor, cuéntanos qué sucedió; tu opinión es fundamental para mejorar nuestro servicio y asegurar que tu próxima experiencia sea excelente.</p>
 
-        <!-- Formulario (sin el action, lo gestiona el script abajo) -->
+        <!-- Formulario -->
         <form id="feedbackForm" class="space-y-5">
             
             <!-- Campo oculto para enviar cuántas estrellas puso en la encuesta inicial -->
@@ -67,6 +67,12 @@
             <!-- Campo oculto para enviar la mesa o placa de origen -->
             <input type="hidden" id="mesaInput" name="mesa" value="No especificada">
             <input type="hidden" name="cliente" value="Linkfortis">
+
+            <!-- CAMPO HONEYPOT (Oculto para humanos, irresistible para bots) -->
+            <div style="display: none; visibility: hidden;" aria-hidden="true">
+                <label for="website">No rellenar este campo si eres humano:</label>
+                <input type="text" id="website" name="website" autocomplete="off" tabindex="-1">
+            </div>
 
             <!-- SECCIÓN DE VALORACIÓN CON EMOJIS (1 al 5) -->
             <div class="space-y-5 pb-2">
@@ -132,9 +138,8 @@
                     placeholder="Tu correo electrónico o número de teléfono">
             </div>
 
-            <!-- Contenedor general de Protección de Datos y Checkbox con separación mínima de 24px (mt-6) -->
+            <!-- Contenedor general de Protección de Datos y Checkbox -->
             <div class="mt-6 space-y-3">
-                <!-- Cláusula informativa básica (RGPD / LOPDGDD) con letra más pequeña (11px) e interlineado relajado -->
                 <div class="bg-gray-50/70 p-3.5 rounded-xl border border-gray-100 text-[11px] text-gray-500 space-y-1.5 leading-relaxed">
                     <p class="font-semibold text-gray-700 mb-1">Protección de Datos:</p>
                     <p><strong>Responsable:</strong> Oscar Armando Milán Martínez (Linkfortis)</p>
@@ -142,7 +147,6 @@
                     <p><strong>Derechos:</strong> Acceso, rectificación y supresión detallados en la <a href="http://linkfortis.com/encuesta/politicadeprivacidad/pp_linkfortis.html" target="_blank" class="text-blue-600 underline font-medium hover:text-blue-700">Política de Privacidad</a>.</p>
                 </div>
 
-                <!-- Casilla de verificación (Checkbox estilizado) -->
                 <div class="flex items-start">
                     <div class="flex items-center h-5">
                         <input id="acepto_politica" name="acepto_politica" type="checkbox" required 
@@ -156,7 +160,7 @@
                 </div>
             </div>
 
-            <!-- Botón Enviar con Degradado, Sombra y Mayor Espaciado -->
+            <!-- Botón Enviar -->
             <button type="submit" 
                 class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-200 transform active:scale-[0.99] text-sm sm:text-base mt-2">
                 Enviar comentarios
@@ -197,6 +201,15 @@
         document.getElementById('feedbackForm').addEventListener('submit', function(e) {
             e.preventDefault(); // Evita que la página recargue
             
+            // VALIDACIÓN HONEYPOT ANTI-SPAM
+            const websiteField = document.getElementById('website').value;
+            if (websiteField && websiteField.trim() !== "") {
+                // Es un bot: simulamos éxito visualmente para confundirlo pero detenemos la ejecución y evitamos el fetch
+                document.getElementById('feedbackForm').classList.add('hidden');
+                document.getElementById('thankYouMessage').classList.remove('hidden');
+                return;
+            }
+
             // Verificar aceptación de la política de privacidad
             const checkPrivacy = document.getElementById('acepto_politica');
             if(!checkPrivacy.checked) {
